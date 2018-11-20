@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "433101224366",
+    "firebase_url": "https://cueit-11d80.firebaseio.com",
+    "project_id": "cueit-11d80",
+    "storage_bucket": "cueit-11d80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957691035120:android:bb9af44738e1ee2a",
+        "android_client_info": {
+          "package_name": "edu.ucsb.cs.cs184.cueit.cueit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "957691035120-cfd4guofi14hautqkuahc0vobda98cf9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA65VMgdIVJeBn4bol6qAf1MCtnr5VllBI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
