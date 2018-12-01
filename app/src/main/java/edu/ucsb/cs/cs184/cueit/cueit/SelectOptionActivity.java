@@ -1,5 +1,6 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -24,7 +25,7 @@ public class SelectOptionActivity extends AppCompatActivity {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //call the create group activity
+                becomeMaster();
             }
         });
 
@@ -32,9 +33,17 @@ public class SelectOptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //call the join group activity
-                
+                joinRoom();
             }
         });
+    }
+
+    private void becomeMaster(){
+        startActivity(new Intent(this, MasterRoomActivity.class));
+    }
+
+    private void joinRoom(){
+        startActivity(new Intent(this, JoinRoomActivity.class));
     }
 
     @Override
