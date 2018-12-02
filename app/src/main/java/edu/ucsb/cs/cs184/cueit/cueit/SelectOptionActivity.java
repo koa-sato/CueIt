@@ -39,7 +39,7 @@ public class SelectOptionActivity extends AppCompatActivity {
     }
 
     private void becomeMaster(){
-        startActivity(new Intent(this, MasterRoomActivity.class));
+        startActivity(new Intent(this, RoomActivity.class));
     }
 
     private void joinRoom(){
