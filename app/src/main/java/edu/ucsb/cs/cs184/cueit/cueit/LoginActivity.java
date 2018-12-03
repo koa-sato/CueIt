@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,9 +29,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
+
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -62,6 +73,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    //Spotify shit
+    private static final String CLIENT_ID = "07635e6dfc8e4b828aa1021d5e594be4";
+    private static final String REDIRECT_URI = "testschema://callback";
+    private SpotifyAppRemote mSpotifyAppRemote;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +85,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+       // onStart();
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
+        //TODO: double check this context
+        SpotifyAppRemote.connect(getBaseContext(), connectionParams,
+                new Connector.ConnectionListener() {
 
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.d("MainActivity", "Connected! Yay!");
+                        System.out.println("hellooooo");
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "Connected! Yay!!",
+                                Toast.LENGTH_LONG);
+
+                        toast.show();
+                        // Now you can start interacting with App Remote
+                        mAuthTask.connected();
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("MainActivity", throwable.getMessage(), throwable);
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "I haet u!!",
+                                Toast.LENGTH_LONG);
+                        System.out.println("everyhtignt is bad");
+
+                        // Something went wrong when attempting to connect! Handle errors here
+                    }
+                });
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -187,6 +237,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
+            //TODO add start intent to SelectOptionActivity on success login
         }
     }
 
@@ -344,6 +395,56 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+
+
+        protected void onStart() {
+            mAuthTask.onStart();
+            ConnectionParams connectionParams =
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build();
+            //TODO: double check this context
+            SpotifyAppRemote.connect(getBaseContext(), connectionParams,
+                    new Connector.ConnectionListener() {
+
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.d("MainActivity", "Connected! Yay!");
+                            System.out.println("hellooooo");
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "Connected! Yay!!",
+                                    Toast.LENGTH_LONG);
+
+                            toast.show();
+                            // Now you can start interacting with App Remote
+                            connected();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("MainActivity", throwable.getMessage(), throwable);
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "I haet u!!",
+                                    Toast.LENGTH_LONG);
+                            System.out.println("everyhtignt is bad");
+
+                            // Something went wrong when attempting to connect! Handle errors here
+                        }
+                    });
+            // We will start writing our code here.
+        }
+
+        private void connected() {
+            // Then we will write some more code here.
+        }
+
+
+        protected void onStop() {
+            mAuthTask.onStop();
+            // Aaand we will finish off here.
         }
     }
 }
