@@ -16,5 +16,6 @@ public class RoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room);
         //TODO check whether user is a master or follower, and hide certain aspects of the xml
 
+        // Inside a room
     }
 }
