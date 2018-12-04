@@ -1,5 +1,6 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -12,6 +13,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
+
+
+//import java.util.HashMap;
 
 /**
  * Created by Donghao Ren on 03/11/2017.
@@ -29,6 +33,7 @@ public class FirebaseHelper {
      */
     public static class Room implements Serializable {
 
+        // Not working
         public String author;
         public String content;
         public double timestamp;
@@ -51,7 +56,7 @@ public class FirebaseHelper {
     public static void Initialize(Context context) {
         FirebaseApp.initializeApp(context);
         db = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = db.getReference("Room");
+        DatabaseReference myRef = db.getReference("Rooms");
         Log.d ("read", myRef.toString());
         // Your code should handle post added, post updated, and post deleted events.
         myRef.addValueEventListener(new ValueEventListener() {
@@ -72,4 +77,72 @@ public class FirebaseHelper {
         return db;
     }
 
+
+    public static void checkAndCreateRoom (OnCreateRoomSuccessListener listener) {
+        String room = (int)(Math.random()*10000) +"";
+        checkRoom (room, new DBCheckRoomListener(room, listener));
+    }
+
+
+    public static void createRoom (String roomID) {
+        DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+        db.child(roomID).child ("Timestamp").setValue(System.currentTimeMillis());
+
+    }
+
+
+    public static void checkRoom (String roomID, CheckRoomListener roomListener) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Rooms");
+        rootRef.addListenerForSingleValueEvent(new DatabaseCheckRoomListener(roomID, roomListener));
+    }
+
+    interface OnCreateRoomSuccessListener {
+        public void onSuccess (boolean success);
+    }
+
+}
+
+class DBCheckRoomListener implements CheckRoomListener {
+    String roomID;
+    FirebaseHelper.OnCreateRoomSuccessListener listener;
+
+    DBCheckRoomListener (String roomID, FirebaseHelper.OnCreateRoomSuccessListener listener) {
+        this.roomID = roomID;
+        this.listener = listener;
+    }
+
+    public void onResponse (boolean roomExists) {
+        if (!roomExists) {
+            FirebaseHelper.createRoom(roomID);
+            listener.onSuccess(true);
+        }
+        else {
+            String room = (int)(Math.random()*10000)+"";
+            FirebaseHelper.checkRoom (room, new DBCheckRoomListener(room, listener));
+        }
+    }
+}
+
+interface CheckRoomListener {
+    public void onResponse (boolean roomExists);
+}
+
+class DatabaseCheckRoomListener implements ValueEventListener {
+    String roomID;
+    CheckRoomListener checkRoomListener;
+
+    DatabaseCheckRoomListener (String roomID, CheckRoomListener checkRoomListener) {
+        this.roomID = roomID;
+        this.checkRoomListener = checkRoomListener;
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot snapshot) {
+        checkRoomListener.onResponse(snapshot.hasChild(roomID));
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+    }
 }

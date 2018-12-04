@@ -2,6 +2,7 @@ package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 
@@ -14,8 +15,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FirebaseHelper.Initialize(this);
-        DatabaseReference db = FirebaseHelper.getInstance().getReference("Room");
-        db.child("NewChild").setValue ("Hello World!");
-        db.child("NewChild2").setValue ("Hello World2!");
+        FirebaseHelper.checkAndCreateRoom(new FirebaseHelper.OnCreateRoomSuccessListener() {
+            @Override
+            public void onSuccess(boolean success) {
+                Log.d ("Room","Success!");
+            }
+        });
     }
 }
