@@ -1,0 +1,71 @@
+package edu.ucsb.cs.cs184.cueit.cueit;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+
+public class MainMenuFragment extends Fragment {
+
+    Button createRoomButton;
+    Button joinRoomButton;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_main_menu, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        createRoomButton = view.findViewById(R.id.create_room_button);
+        joinRoomButton = view.findViewById(R.id.join_room_button);
+
+        createRoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCreateRoomFragment(v);
+            }
+        });
+
+        joinRoomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startJoinRoomFragment(v);
+            }
+        });
+    }
+
+    public void startCreateRoomFragment(View v) {
+        CreateRoomFragment newFragment = new CreateRoomFragment();
+        Bundle args = new Bundle();
+        newFragment.setArguments(args);
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public void startJoinRoomFragment(View v) {
+        JoinRoomFragment newFragment = new JoinRoomFragment();
+        Bundle args = new Bundle();
+        newFragment.setArguments(args);
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
+    }
+
+    public static MainMenuFragment newInstance() {
+        return new MainMenuFragment();
+    }
+}

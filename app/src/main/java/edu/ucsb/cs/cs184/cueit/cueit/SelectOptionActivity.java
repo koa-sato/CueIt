@@ -43,7 +43,7 @@ public class SelectOptionActivity extends AppCompatActivity {
     }
 
     private void joinRoom(){
-        startActivity(new Intent(this, JoinRoomActivity.class));
+        startActivity(new Intent(this, JoinRoomFragment.class));
     }
 
     @Override

@@ -34,13 +34,18 @@ public class FirebaseHelper {
     public static class Room implements Serializable {
 
         // Not working
+        public static String code;
         public String author;
         public String content;
         public double timestamp;
-        public double longitude;
-        public double latitude;
-        public String type;
-        public int likes;
+
+        public Room(String code) {
+            this.code = code;
+        }
+
+        public static String getCode() {
+            return code;
+        }
 
     }
 
