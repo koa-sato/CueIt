@@ -34,8 +34,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.spotify.protocol.client.Subscription;
@@ -67,6 +70,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private UserLoginTask mAuthTask = null;
 
+    private YouTubePlayerView youTubeView;
+
+
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -86,40 +92,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
        // onStart();
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
-        //TODO: double check this context
-        SpotifyAppRemote.connect(getBaseContext(), connectionParams,
-                new Connector.ConnectionListener() {
-
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("MainActivity", "Connected! Yay!");
-                        System.out.println("hellooooo");
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "Connected! Yay!!",
-                                Toast.LENGTH_LONG);
-
-                        toast.show();
-                        // Now you can start interacting with App Remote
-                        mAuthTask.connected();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MainActivity", throwable.getMessage(), throwable);
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "I haet u!!",
-                                Toast.LENGTH_LONG);
-                        System.out.println("everyhtignt is bad");
-
-                        // Something went wrong when attempting to connect! Handle errors here
-                    }
-                });
+//        ConnectionParams connectionParams =
+//                new ConnectionParams.Builder(CLIENT_ID)
+//                        .setRedirectUri(REDIRECT_URI)
+//                        .showAuthView(true)
+//                        .build();
+//        //TODO: double check this context
+//        SpotifyAppRemote.connect(getBaseContext(), connectionParams,
+//                new Connector.ConnectionListener() {
+//
+//                    @Override
+//                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+//                        mSpotifyAppRemote = spotifyAppRemote;
+//                        Log.d("MainActivity", "Connected! Yay!");
+//                        System.out.println("hellooooo");
+//                        Toast toast = Toast.makeText(getApplicationContext(),
+//                                "Connected! Yay!!",
+//                                Toast.LENGTH_LONG);
+//
+//                        toast.show();
+//                        // Now you can start interacting with App Remote
+//                        mAuthTask.connected();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable throwable) {
+//                        Log.e("MainActivity", throwable.getMessage(), throwable);
+//                        Toast toast = Toast.makeText(getApplicationContext(),
+//                                "I haet u!!",
+//                                Toast.LENGTH_LONG);
+//                        System.out.println("everyhtignt is bad");
+//
+//                        // Something went wrong when attempting to connect! Handle errors here
+//                    }
+//                });
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
