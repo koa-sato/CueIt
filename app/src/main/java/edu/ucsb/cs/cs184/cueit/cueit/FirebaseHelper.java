@@ -80,7 +80,7 @@ public class FirebaseHelper {
 
     public static void checkAndCreateRoom (OnCreateRoomSuccessListener listener) {
         String room = (int)(Math.random()*10000) +"";
-        checkRoom (room, new DBCheckRoomListener(room, listener));
+        checkRoom (room, new DatabaseGuessRoomListener(room, listener));
     }
 
 
@@ -102,11 +102,11 @@ public class FirebaseHelper {
 
 }
 
-class DBCheckRoomListener implements CheckRoomListener {
+class DatabaseGuessRoomListener implements CheckRoomListener {
     String roomID;
     FirebaseHelper.OnCreateRoomSuccessListener listener;
 
-    DBCheckRoomListener (String roomID, FirebaseHelper.OnCreateRoomSuccessListener listener) {
+    DatabaseGuessRoomListener (String roomID, FirebaseHelper.OnCreateRoomSuccessListener listener) {
         this.roomID = roomID;
         this.listener = listener;
     }
@@ -118,13 +118,9 @@ class DBCheckRoomListener implements CheckRoomListener {
         }
         else {
             String room = (int)(Math.random()*10000)+"";
-            FirebaseHelper.checkRoom (room, new DBCheckRoomListener(room, listener));
+            FirebaseHelper.checkRoom (room, new DatabaseGuessRoomListener(room, listener));
         }
     }
-}
-
-interface CheckRoomListener {
-    public void onResponse (boolean roomExists);
 }
 
 class DatabaseCheckRoomListener implements ValueEventListener {
