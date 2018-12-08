@@ -23,7 +23,8 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_room);
+        //setContentView(R.layout.activity_room);
+        setContentView(R.layout.activity_room2);
 
         youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
