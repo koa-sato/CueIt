@@ -27,7 +27,8 @@ public class MainMenuFragment extends Fragment {
         createRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startCreateRoomFragment(v);
+                //startCreateRoomFragment(v);
+                createRoom();
             }
         });
 
@@ -39,8 +40,19 @@ public class MainMenuFragment extends Fragment {
         });
     }
 
-    public void startCreateRoomFragment(View v) {
-        CreateRoomFragment newFragment = new CreateRoomFragment();
+
+    public void createRoom () {
+        FirebaseHelper.checkAndCreateRoom(new FirebaseHelper.OnCreateRoomSuccessListener() {
+            @Override
+            public void onSuccess(String code) {
+                startRoomFragment(code);
+            }
+        });
+
+    }
+
+    public void startRoomFragment(String code) {
+        RoomFragment newFragment = new RoomFragment();
         Bundle args = new Bundle();
         newFragment.setArguments(args);
 
@@ -49,8 +61,11 @@ public class MainMenuFragment extends Fragment {
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
 
+        FirebaseHelper.Room room = new FirebaseHelper.Room(code);
+
         transaction.commit();
     }
+
 
     public void startJoinRoomFragment(View v) {
         JoinRoomFragment newFragment = new JoinRoomFragment();

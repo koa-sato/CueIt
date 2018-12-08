@@ -102,7 +102,7 @@ public class FirebaseHelper {
     }
 
     interface OnCreateRoomSuccessListener {
-        public void onSuccess (boolean success);
+        public void onSuccess (String code);
     }
 
 }
@@ -119,7 +119,7 @@ class DatabaseGuessRoomListener implements CheckRoomListener {
     public void onResponse (boolean roomExists) {
         if (!roomExists) {
             FirebaseHelper.createRoom(roomID);
-            listener.onSuccess(true);
+            listener.onSuccess(roomID);
         }
         else {
             String room = (int)(Math.random()*10000)+"";
