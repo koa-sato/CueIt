@@ -2,6 +2,9 @@ package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -14,14 +17,31 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
+    private EditText searchBar;
+    private Button enterSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_room);
 
         youTubeView = (YouTubePlayerView) findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
+//        searchBar = (EditText) findViewById(R.id.searchBar);
+//        enterSong =(Button) findViewById(R.id.enterSong);
+        searchBar = (EditText) findViewById(R.id.searchBar);
+        enterSong =(Button) findViewById(R.id.enterSong);
+
+        enterSong.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View v) {
+                        // do something when the button is clicked
+                        // Yes we will handle click here but which button clicked??? We don't know
+                        System.out.println("HELLO THSI IS IT "+ searchBar.getText());
+
+                    }
+                });
+
     }
 
     @Override
