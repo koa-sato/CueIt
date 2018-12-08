@@ -35,9 +35,7 @@ public class FirebaseHelper {
 
         // Not working
         public static String code;
-        public String author;
-        public String content;
-        public double timestamp;
+        public static String master;
 
         public Room(String code) {
             this.code = code;
@@ -47,6 +45,7 @@ public class FirebaseHelper {
             return code;
         }
 
+        public static String getMaster() { return master; }
     }
 
     /**
@@ -68,7 +67,8 @@ public class FirebaseHelper {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object a = dataSnapshot.getValue();
-                Log.d ("read", "--------dsd------------" +a.toString());
+                if (a != null)
+                    Log.d ("read", "--------dsd------------" +a.toString());
             }
 
             @Override
@@ -93,6 +93,11 @@ public class FirebaseHelper {
         DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
         db.child(roomID).child ("Timestamp").setValue(System.currentTimeMillis());
 
+    }
+
+    public static void updateRoom (String roomId, String key, String value) {
+        DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+        db.child(roomId).child (key).setValue(value);
     }
 
 

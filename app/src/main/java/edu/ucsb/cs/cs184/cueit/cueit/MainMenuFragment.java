@@ -1,5 +1,8 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -45,6 +48,11 @@ public class MainMenuFragment extends Fragment {
         FirebaseHelper.checkAndCreateRoom(new FirebaseHelper.OnCreateRoomSuccessListener() {
             @Override
             public void onSuccess(String code) {
+                WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                WifiInfo wInfo = wifiManager.getConnectionInfo();
+                String macAddress = wInfo.getMacAddress();
+                FirebaseHelper.updateRoom(code, "MasterDevice", macAddress);
+
                 startRoomFragment(code);
             }
         });
