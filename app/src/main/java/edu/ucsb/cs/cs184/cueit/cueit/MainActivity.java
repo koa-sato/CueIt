@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -13,12 +14,16 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
 
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
     private EditText searchBar;
     private Button enterSong;
+    private ListView songsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,7 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 //        enterSong =(Button) findViewById(R.id.enterSong);
         searchBar = (EditText) findViewById(R.id.searchBar);
         enterSong =(Button) findViewById(R.id.enterSong);
+        songsList =(ListView) findViewById(R.id.list);
 
         enterSong.setOnClickListener(
                 new View.OnClickListener() {
@@ -42,6 +48,15 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
 
                     }
                 });
+
+        ArrayList<SongModel> songs = new ArrayList<>();
+        songs.add(new SongModel("asbe", "Papparai",2));
+        songs.add(new SongModel("asb1e", "Turn down",1));
+        songs.add(new SongModel("afs1e", "Turn up",1));
+        songs.add(new SongModel("sjdf", "Turn rgiht",1));
+
+        SongListAdapter sladapter = new SongListAdapter(this, R.layout.list_item, songs);
+        songsList.setAdapter(sladapter);
 
     }
 
