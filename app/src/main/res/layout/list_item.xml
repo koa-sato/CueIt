@@ -17,16 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/numLikes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
-            android:text="0 Upvotes"
-            android:textColor="@android:color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/songTitle" />
 
         <TextView
             android:id="@+id/songTitle"
@@ -35,15 +25,24 @@
             android:layout_alignParentTop="true"
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="200dp"
-            android:layout_marginStart="16dp"
+            android:paddingLeft="16dp"
             android:text="Song Title"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/black"
-            app:layout_constraintBottom_toTopOf="@+id/numLikes"
             app:layout_constraintEnd_toStartOf="@+id/upvoteButton"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/numLikes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:layout_marginTop="6dp"
+            android:text="0 Upvotes"
+            android:textColor="@android:color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/songTitle" />
     </LinearLayout>
 
 
@@ -53,7 +52,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="4dp"
-        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
         android:text="LIKE"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"

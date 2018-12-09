@@ -49,6 +49,7 @@ public class JoinRoomFragment extends android.app.Fragment {
     public void startRoomFragment(String code) {
         RoomFragment newFragment = new RoomFragment();
         Bundle args = new Bundle();
+        args.putString ("roomId", code);
         newFragment.setArguments(args);
 
         android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
