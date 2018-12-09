@@ -99,7 +99,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
-    private static final long NUMBER_OF_VIDEOS_RETURNED = 8;
+    private static final long NUMBER_OF_VIDEOS_RETURNED = 4;
 
     /**
      * Define a global instance of a Youtube object, which will be used
@@ -248,7 +248,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                         t.printStackTrace();
                     }
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity().getApplicationContext(),android.R.layout.simple_dropdown_item_1line, dropdownText);
-                    dropdownList.setThreshold(1);
+                    dropdownList.setThreshold(3);
                     //Set the adapter
                     dropdownList.setAdapter(adapter);
 
