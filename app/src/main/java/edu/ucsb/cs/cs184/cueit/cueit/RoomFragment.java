@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -42,6 +44,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private Button enterSong;
     private TextView tv;
     private ListView songsList;
+    private TextView currentlyPlayingTextView;
+    private TextView roomCodeTextView;
 
     private SongListAdapter sladapter;
     private MyPlayerStateChangeListener playerStateChangeListener;
@@ -59,13 +63,15 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         searchBar = (EditText) view.findViewById(R.id.searchBar);
         enterSong =(Button) view.findViewById(R.id.enterSong);
         songsList =(ListView) view.findViewById(R.id.list);
-
+        currentlyPlayingTextView = (TextView) view.findViewById(R.id.nowPlayingText);
+        roomCodeTextView = (TextView) view.findViewById(R.id.roomCode);
 
         RoomFragment.roomCode = getArguments().getString("roomId");
 
         songs = new ArrayList<>();
         Log.d ("onChildChanged", RoomFragment.roomCode);
 
+        roomCodeTextView.setText ("Room Code: " +RoomFragment.roomCode);
 
         FirebaseHelper.getInstance().getReference("Rooms").child(RoomFragment.roomCode)
                 .addValueEventListener(new ValueEventListener() {
@@ -87,9 +93,22 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
                         }
                         Collections.sort (songs);
+
                         SongListAdapter sladapter = new SongListAdapter(
                                 getActivity().getApplicationContext(), R.layout.list_item, songs);
                         songsList.setAdapter(sladapter);
+
+                        if (!songs.isEmpty() && player != null) {
+                            playNextVideo();
+                        }
+
+                        try {
+                            String curPlaying = (String) dataSnapshot.child("CurrentlyPlaying").child("songName").getValue();
+                            currentlyPlayingTextView.setText ("Currently Playing: " + curPlaying);
+                        } catch (Exception e) {
+                            currentlyPlayingTextView.setText ("Currently Playing: None");
+                        }
+
                     }
 
                     @Override
@@ -132,11 +151,10 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 //        player.setPlaylistEventListener(playlistEventListener);
         player.setPlayerStateChangeListener(playerStateChangeListener);
 //        player.setPlaybackEventListener(playbackEventListener);
-        if (!wasRestored) {
-            player.loadVideo("fhWaJi1Hsfo"); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
-
+        if (!songs.isEmpty() && player != null) {
+            playNextVideo();
         }
-//        setControlsEnabled(true);
+
     }
 
     @Override
@@ -185,14 +203,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                 Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
                 return;
             }
-            String next_video;
-            next_video = songs.get(0).getSongURL();
-            //erase the first child from the songs queue
-            songs.remove(0); //this pushes down right?
-            //notify the adapter of the change
-            sladapter.notifyDataSetChanged();
-            //TODO remove the next_video from the db so it doesnt show up in the listview
-            player.loadVideo(next_video);
+
+            playNextVideo();
         }
 
         @Override
@@ -200,6 +212,24 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
         }
     }
+
+    public void playNextVideo ( ) {
+        SongModel s = songs.get(0);
+        String next_video = s.getSongURL();
+        //erase the first child from the songs queue
+        //notify the adapter of the change
+        sladapter.notifyDataSetChanged();
+        //TODO remove the next_video from the db so it doesnt show up in the listview
+
+        DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+        db.child(RoomFragment.roomCode).child ("songList").child (next_video).removeValue();
+
+        db.child(RoomFragment.roomCode).child ("CurrentlyPlaying").setValue(s);
+
+        songs.remove(0); //this pushes down right?
+        player.loadVideo(next_video);
+    }
+
 
     /*
     @Override
