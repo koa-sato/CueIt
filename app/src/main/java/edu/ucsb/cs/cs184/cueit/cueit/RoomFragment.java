@@ -1,9 +1,11 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -16,17 +18,22 @@ import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener {
+public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener{
 
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
+    private YouTubePlayer player;
     private EditText searchBar;
     private Button enterSong;
     private TextView tv;
     private ListView songsList;
-    private ArrayList<SongModel> songs= new ArrayList<>();
+    private ArrayList<SongModel> songs= new ArrayList<SongModel>();
     private String roomCode;
+    private SongListAdapter sladapter;
+
+    private MyPlayerStateChangeListener playerStateChangeListener;
 
 
     @Override
@@ -52,22 +59,30 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                     }
                 });
 
-        songs.add(new SongModel("asbe", "Papparai",2));
+        songs.add(new SongModel("FZfjWXYm80k", "Papparai",2));
         songs.add(new SongModel("asb1e", "Turn down",1));
         songs.add(new SongModel("afs1e", "Turn up",1));
         songs.add(new SongModel("sjdf", "Turn right",1));
 
-        SongListAdapter sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
+        sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
         songsList.setAdapter(sladapter);
+
+        playerStateChangeListener = new MyPlayerStateChangeListener();
 
         return view;
     }
 
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
+        this.player = player;
+//        player.setPlaylistEventListener(playlistEventListener);
+        player.setPlayerStateChangeListener(playerStateChangeListener);
+//        player.setPlaybackEventListener(playbackEventListener);
         if (!wasRestored) {
-            player.cueVideo("fhWaJi1Hsfo"); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
+            player.loadVideo("fhWaJi1Hsfo"); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
+
         }
+//        setControlsEnabled(true);
     }
 
     @Override
@@ -77,6 +92,57 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         } else {
             String error = String.format("this is bad", errorReason.toString());
             Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void refreshQueue() {
+        //TODO sort the stuff with the highest likes at the top
+        songsList.removeAllViews();
+    }
+
+    private final class MyPlayerStateChangeListener implements YouTubePlayer.PlayerStateChangeListener {
+        String playerState = "UNINITIALIZED";
+
+
+
+        @Override
+        public void onLoading() {
+        }
+
+        @Override
+        public void onLoaded(String videoId) {
+        }
+
+        @Override
+        public void onAdStarted() {
+        }
+
+        @Override
+        public void onVideoStarted() {
+        }
+
+        @Override
+        public void onVideoEnded() {
+            Log.e("fck", "STOPPED");
+            //get next queued item, if exists
+            if (songs.get(0) == null) {
+                //ERROR!
+                String error = String.format("this is bad", "nullington palace");
+                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+                return;
+            }
+            String next_video;
+            next_video = songs.get(0).songID;
+            //erase the first child from the songs queue
+            songs.remove(0); //this pushes down right?
+            //notify the adapter of the change
+            sladapter.notifyDataSetChanged();
+            player.loadVideo(next_video);
+        }
+
+        @Override
+        public void onError(YouTubePlayer.ErrorReason reason) {
+
         }
     }
 
