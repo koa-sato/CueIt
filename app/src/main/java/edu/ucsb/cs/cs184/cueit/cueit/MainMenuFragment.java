@@ -1,6 +1,7 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -43,6 +45,14 @@ public class MainMenuFragment extends android.app.Fragment {
                 startJoinRoomFragment(v);
             }
         });
+
+        TextView tx = view.findViewById(R.id.title_screen);
+
+        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
+//        Typeface font2 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/Muli-Regular.ttf");
+        tx.setTypeface(font1);
+//        TextView a = view.findViewById(R.id.join_gang_button), b = view.findViewById(R.id.create_gang_button);
+////        a.setTypeface(font2);
     }
 
 

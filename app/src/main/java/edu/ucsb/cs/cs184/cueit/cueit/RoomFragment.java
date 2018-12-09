@@ -3,6 +3,7 @@ package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -313,6 +314,12 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         songsList.setAdapter(sladapter);
 
         playerStateChangeListener = new MyPlayerStateChangeListener();
+
+
+//        //set fonts
+//        Typeface font2 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/Muli-Regular.ttf");
+//        roomCodeTextView.setTypeface(font2);
+//        currentlyPlayingTextView.setTypeface(font2);
 
         return view;
     }

@@ -1,5 +1,6 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -8,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by deni on 11/30/18.
@@ -44,6 +48,12 @@ public class JoinRoomFragment extends android.app.Fragment {
                 });
             }
         });
+
+        TextView tx = view.findViewById(R.id.title_screen2);
+
+        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
+//        Typeface font2 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/Muli-Regular.ttf");
+        tx.setTypeface(font1);
     }
 
     public void startRoomFragment(String code) {
