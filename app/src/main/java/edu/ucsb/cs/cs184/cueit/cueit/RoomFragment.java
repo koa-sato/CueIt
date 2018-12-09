@@ -17,17 +17,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener {
 
@@ -37,29 +39,28 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private Button enterSong;
     private TextView tv;
     private ListView songsList;
-    private String roomCode;
+    public static String roomCode;
     private boolean isMaster;
-
+    private ArrayList<SongModel> songs;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //setContentView(R.layout.activity_room);
         final View view = inflater.inflate(R.layout.fragment_room, container, false);
         youTubeView = view.findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
-//        searchBar = (EditText) view.findViewById(R.id.searchBar);
-//        enterSong =(Button) view.findViewById(R.id.enterSong);
         searchBar = (EditText) view.findViewById(R.id.searchBar);
         enterSong =(Button) view.findViewById(R.id.enterSong);
         songsList =(ListView) view.findViewById(R.id.list);
 
 
-        roomCode = getArguments().getString("roomId");
-        Log.d ("onChildChanged", roomCode);
+        RoomFragment.roomCode = getArguments().getString("roomId");
+
+        songs = new ArrayList<>();
+        Log.d ("onChildChanged", RoomFragment.roomCode);
 
 
-        FirebaseHelper.getInstance().getReference("Rooms").child(roomCode)
+        FirebaseHelper.getInstance().getReference("Rooms").child(RoomFragment.roomCode)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -69,7 +70,19 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
 
-                        
+                        songs.clear();
+                        for (DataSnapshot song : dataSnapshot.child ("songList").getChildren()) {
+                            Log.d ("onChildAdd", ""+song.child("Timestamp").getValue());
+                            songs.add (new SongModel((String)song.child("songURL").getValue(),
+                                    (String)song.child("songName").getValue(),
+                                    (long)song.child("upVotes").getValue(),
+                                    (long)song.child("timestamp").getValue()));
+
+                        }
+                        Collections.sort (songs);
+                        SongListAdapter sladapter = new SongListAdapter(
+                                getActivity().getApplicationContext(), R.layout.list_item, songs);
+                        songsList.setAdapter(sladapter);
                     }
 
                     @Override
@@ -82,22 +95,19 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
             public void onClick(View v) {
                 // do something when the button is clicked
                 // Yes we will handle click here but which button clicked??? We don't know
+                String childName = searchBar.getText().toString();
+                SongModel newSong = new SongModel (childName, childName, 1, System.currentTimeMillis());
 
                 DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
-                db.child(roomCode).child ("songList").child (searchBar.getText().toString())
-                        .child("Timestamp").setValue (System.currentTimeMillis());
-                db.child(roomCode).child ("songList").child (searchBar.getText().toString())
-                        .child("upVotes").setValue (1);
-                //db.child(roomCode).child ("songList").child (searchBar.getText().toString())
-                //        .child("upVotes").setValue (1);
+                db.child(RoomFragment.roomCode).child ("songList").child (childName).setValue (newSong).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("onClick", "Success!");
+                    }
+                });
+
             }
         });
-
-        ArrayList<SongModel> songs = new ArrayList<>();
-        songs.add(new SongModel("asbe", "Papparai",2));
-        songs.add(new SongModel("asb1e", "Turn down",1));
-        songs.add(new SongModel("afs1e", "Turn up",1));
-        songs.add(new SongModel("sjdf", "Turn right",1));
 
         SongListAdapter sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
         songsList.setAdapter(sladapter);
