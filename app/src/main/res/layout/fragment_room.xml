@@ -84,7 +84,7 @@
         android:layout_below="@+id/youtube_view"
         android:ems="10"
         android:hint="Search..."
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         app:layout_constraintLeft_toLeftOf="parent"
         android:background="@android:color/white"
         app:layout_constraintRight_toLeftOf="@id/enterSong"
@@ -106,7 +106,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dropDown" />
+        app:layout_constraintTop_toBottomOf="@+id/upvoteButton" />
 
 
 </android.support.constraint.ConstraintLayout>
