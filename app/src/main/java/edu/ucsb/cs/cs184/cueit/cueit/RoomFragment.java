@@ -98,13 +98,17 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                                 getActivity().getApplicationContext(), R.layout.list_item, songs);
                         songsList.setAdapter(sladapter);
 
-                        if (!songs.isEmpty() && player != null) {
+                        if (player != null && !player.isPlaying()) {
                             playNextVideo();
                         }
 
                         try {
-                            String curPlaying = (String) dataSnapshot.child("CurrentlyPlaying").child("songName").getValue();
-                            currentlyPlayingTextView.setText ("Currently Playing: " + curPlaying);
+                            String curPlaying = (String) dataSnapshot.child("CurrentlyPlaying")
+                                    .child("songName").getValue();
+                            if (curPlaying != null)
+                                currentlyPlayingTextView.setText ("Currently Playing: " + curPlaying);
+                            else
+                                currentlyPlayingTextView.setText ("Currently Playing: None");
                         } catch (Exception e) {
                             currentlyPlayingTextView.setText ("Currently Playing: None");
                         }
@@ -151,10 +155,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 //        player.setPlaylistEventListener(playlistEventListener);
         player.setPlayerStateChangeListener(playerStateChangeListener);
 //        player.setPlaybackEventListener(playbackEventListener);
-        if (!songs.isEmpty() && player != null) {
-            playNextVideo();
-        }
 
+        playNextVideo();
     }
 
     @Override
@@ -195,15 +197,6 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
         @Override
         public void onVideoEnded() {
-            Log.e("fck", "STOPPED");
-            //get next queued item, if exists
-            if (songs.get(0) == null) {
-                //ERROR!
-                String error = String.format("this is bad", "nullington palace");
-                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
-                return;
-            }
-
             playNextVideo();
         }
 
@@ -213,21 +206,23 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         }
     }
 
-    public void playNextVideo ( ) {
-        SongModel s = songs.get(0);
-        String next_video = s.getSongURL();
-        //erase the first child from the songs queue
-        //notify the adapter of the change
-        sladapter.notifyDataSetChanged();
-        //TODO remove the next_video from the db so it doesnt show up in the listview
+    public void playNextVideo () {
+        if (!songs.isEmpty()) {
+            SongModel s = songs.get(0);
+            String next_video = s.getSongURL();
+            //erase the first child from the songs queue
+            //notify the adapter of the change
+            sladapter.notifyDataSetChanged();
+            //TODO remove the next_video from the db so it doesnt show up in the listview
 
-        DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
-        db.child(RoomFragment.roomCode).child ("songList").child (next_video).removeValue();
+            DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+            db.child(RoomFragment.roomCode).child("songList").child(next_video).removeValue();
 
-        db.child(RoomFragment.roomCode).child ("CurrentlyPlaying").setValue(s);
+            db.child(RoomFragment.roomCode).child("CurrentlyPlaying").setValue(s);
 
-        songs.remove(0); //this pushes down right?
-        player.loadVideo(next_video);
+            songs.remove(0); //this pushes down right?
+            player.loadVideo(next_video);
+        }
     }
 
 
