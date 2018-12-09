@@ -1,12 +1,15 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
+//import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends YouTubeBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,12 +21,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void displayFragment() {
         MainMenuFragment mainMenuFragment = MainMenuFragment.newInstance();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, mainMenuFragment, "mainMenu");
 
-        fragmentTransaction.add(R.id.fragment_container, mainMenuFragment
-                ).addToBackStack(null).commit();
+        fragmentTransaction.commit();
+
+        //fragmentTransaction.add(R.id.fragment_container, mainMenuFragment
+        //       ).addToBackStack(null).commit();
         // Update the Button text.
     }
 

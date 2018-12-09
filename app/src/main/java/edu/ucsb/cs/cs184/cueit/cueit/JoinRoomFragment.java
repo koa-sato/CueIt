@@ -13,7 +13,7 @@ import android.widget.EditText;
  * Created by deni on 11/30/18.
  */
 
-public class JoinRoomFragment extends Fragment {
+public class JoinRoomFragment extends android.app.Fragment {
     EditText code;
     Button joinButton;
 
@@ -51,7 +51,7 @@ public class JoinRoomFragment extends Fragment {
         Bundle args = new Bundle();
         newFragment.setArguments(args);
 
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);

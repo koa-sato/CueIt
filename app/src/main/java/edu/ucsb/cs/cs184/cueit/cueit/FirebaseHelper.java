@@ -66,9 +66,11 @@ public class FirebaseHelper {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Object a = dataSnapshot.getValue();
-                if (a != null)
-                    Log.d ("read", "--------dsd------------" +a.toString());
+                if (dataSnapshot != null) {
+                    Object a = dataSnapshot.getValue();
+                    if (a != null)
+                        Log.d("read", "--------dsd------------" + a.toString());
+                }
             }
 
             @Override
