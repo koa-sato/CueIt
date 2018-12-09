@@ -69,7 +69,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
 
-
+                        
                     }
 
                     @Override
