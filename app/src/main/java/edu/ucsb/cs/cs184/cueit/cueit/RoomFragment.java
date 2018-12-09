@@ -1,9 +1,6 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,22 +9,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
-import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 import com.google.android.youtube.player.YouTubePlayerView;
 
-public class RoomFragment extends YouTubePlayerFragment implements YouTubePlayer.OnInitializedListener {
+public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener {
 
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
@@ -41,13 +28,9 @@ public class RoomFragment extends YouTubePlayerFragment implements YouTubePlayer
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //setContentView(R.layout.activity_room);
-        Log.d ("Alive", "here");
         final View view = inflater.inflate(R.layout.fragment_room, container, false);
-        Log.d ("Alive", "here2");
-        youTubeView = (YouTubePlayerView) view.findViewById(R.id.youtube_view);
-        Log.d ("Alive", "here3");
+        youTubeView = view.findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
-        Log.d ("Alive", "here4");
 //        searchBar = (EditText) view.findViewById(R.id.searchBar);
 //        enterSong =(Button) view.findViewById(R.id.enterSong);
         searchBar = (EditText) view.findViewById(R.id.searchBar);
@@ -62,28 +45,14 @@ public class RoomFragment extends YouTubePlayerFragment implements YouTubePlayer
 
                     }
                 });
-        Log.d ("Alive", "here5");
         return view;
     }
 
-
-    /*
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        tv = view.findViewById(R.id.room_text_view);
-        tv.setText(FirebaseHelper.Room.getCode());
-        Log.d ("Alive", "here6");
-    }
-    */
-
-
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
-        Log.d ("Alive", "here6");
         if (!wasRestored) {
             player.cueVideo("fhWaJi1Hsfo"); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
         }
-        Log.d ("Alive", "here7");
     }
 
     @Override
@@ -106,7 +75,6 @@ public class RoomFragment extends YouTubePlayerFragment implements YouTubePlayer
     } */
 
     protected Provider getYouTubePlayerProvider() {
-        Log.d ("Alive", "here8");
         return youTubeView;
     }
 }

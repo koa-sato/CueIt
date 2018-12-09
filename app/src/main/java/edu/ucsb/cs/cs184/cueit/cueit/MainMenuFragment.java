@@ -4,9 +4,6 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,17 +58,12 @@ public class MainMenuFragment extends android.app.Fragment {
     }
 
     public void startRoomFragment(String code) {
-        Log.d ("Alive", "here9");
         RoomFragment newFragment = new RoomFragment();
         Bundle args = new Bundle();
         newFragment.setArguments(args);
-        Log.d ("Alive", "here10");
         android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        Log.d ("Alive", "here11");
         transaction.replace(R.id.fragment_container, newFragment);
-        Log.d ("Alive", "here12");
         transaction.addToBackStack(null);
-        Log.d ("Alive", "here13");
         FirebaseHelper.Room room = new FirebaseHelper.Room(code);
 
         transaction.commit();
