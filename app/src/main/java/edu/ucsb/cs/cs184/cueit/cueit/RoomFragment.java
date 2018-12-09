@@ -142,11 +142,13 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-//                        WifiInfo wInfo = wifiManager.getConnectionInfo();
                         String macAddress = getMacAddr();
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
+
+                        if (!isMaster) {
+                            youTubeView.setVisibility(View.GONE);
+                        }
 
                         songs.clear();
                         for (DataSnapshot song : dataSnapshot.child ("songList").getChildren()) {
@@ -431,7 +433,10 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     }
 
     public void playNextVideo () {
-        if (!songs.isEmpty()) {
+        if (!songs.isEmpty() && isMaster) {
+            Log.d ("PlayNext", "HERE");
+            Log.d ("PlayNext", isMaster+"");
+
             SongModel s = songs.get(0);
             String next_video = s.getSongURL();
             //erase the first child from the songs queue
