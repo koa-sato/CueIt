@@ -24,6 +24,7 @@ public class MainActivity extends YouTubeBaseActivity implements YouTubePlayer.O
     private EditText searchBar;
     private Button enterSong;
     private ListView songsList;
+    private ArrayList<SongModel> allSongs= new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
