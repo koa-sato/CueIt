@@ -97,6 +97,9 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private boolean isMaster;
     private ArrayList<SongModel> songs;
 
+    private SongModel currentlyPlayingSong;
+    boolean isPlayingSong = false;
+
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
     private static final long NUMBER_OF_VIDEOS_RETURNED = 4;
@@ -142,11 +145,13 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-//                        WifiInfo wInfo = wifiManager.getConnectionInfo();
                         String macAddress = getMacAddr();
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
+
+                        if (!isMaster) {
+                            youTubeView.setVisibility(View.GONE);
+                        }
 
                         songs.clear();
                         for (DataSnapshot song : dataSnapshot.child ("songList").getChildren()) {
@@ -163,19 +168,26 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                                 getActivity().getApplicationContext(), R.layout.list_item, songs);
                         songsList.setAdapter(sladapter);
 
-                        if (player != null && !player.isPlaying()) {
-                            playNextVideo();
-                        }
-
+                        //isPlayingSong = true;
                         try {
                             String curPlaying = (String) dataSnapshot.child("CurrentlyPlaying")
                                     .child("songName").getValue();
-                            if (curPlaying != null)
-                                currentlyPlayingTextView.setText ("Currently Playing: " + curPlaying);
-                            else
-                                currentlyPlayingTextView.setText ("Currently Playing: None");
+                            if (curPlaying != null) {
+                                currentlyPlayingTextView.setText("Currently Playing: " + curPlaying);
+                            }
+                            else {
+                                currentlyPlayingTextView.setText("Currently Playing: None");
+                                //isPlayingSong = false;
+                            }
                         } catch (Exception e) {
                             currentlyPlayingTextView.setText ("Currently Playing: None");
+                            //isPlayingSong = false;
+                        }
+
+                        //if (player != null && !player.isPlaying()) {
+                        if (player != null && !isPlayingSong) {
+                            Log.d ("PlayNext", "isPlayingSong="+isPlayingSong);
+                            playNextVideo();
                         }
 
                     }
@@ -335,6 +347,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         this.player = player;
+        //this.player.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
 //        player.setPlaylistEventListener(playlistEventListener);
         player.setPlayerStateChangeListener(playerStateChangeListener);
 //        player.setPlaybackEventListener(playbackEventListener);
@@ -394,7 +407,6 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
 
     public void refreshQueue() {
-        //TODO sort the stuff with the highest likes at the top
         songsList.removeAllViews();
     }
 
@@ -417,11 +429,19 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
         @Override
         public void onVideoStarted() {
+            Log.d ("Called", "started");
+            DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+            db.child(RoomFragment.roomCode).child("CurrentlyPlaying").setValue(currentlyPlayingSong);
         }
 
         @Override
         public void onVideoEnded() {
-            playNextVideo();
+            Log.d ("called", "ended");
+            isPlayingSong = false;
+            FirebaseHelper.getInstance().getReference("Rooms").child (RoomFragment.roomCode)
+                    .child("CurrentlyPlaying").removeValue();
+
+            //playNextVideo();
         }
 
         @Override
@@ -431,9 +451,16 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     }
 
     public void playNextVideo () {
-        if (!songs.isEmpty()) {
+        if (!songs.isEmpty() && isMaster && !isPlayingSong) {
+            isPlayingSong = true;
+
+            Log.d ("PlayNext", "HERE");
+            //Log.d ("PlayNext", isMaster+"");
+
             SongModel s = songs.get(0);
+            currentlyPlayingSong = s;
             String next_video = s.getSongURL();
+            Log.d ("PlayNext", next_video);
             //erase the first child from the songs queue
             //notify the adapter of the change
             sladapter.notifyDataSetChanged();
@@ -441,8 +468,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
             DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
             db.child(RoomFragment.roomCode).child("songList").child(next_video).removeValue();
-
-            db.child(RoomFragment.roomCode).child("CurrentlyPlaying").setValue(s);
+            db.child(RoomFragment.roomCode).child("CurrentlyPlaying").setValue(currentlyPlayingSong);
 
             songs.remove(0); //this pushes down right?
             player.loadVideo(next_video);

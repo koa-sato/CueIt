@@ -2,13 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_width="wrap_content"
+    android:layout_height="100dp">
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="300dp"
+        android:layout_width="296dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:orientation="vertical"
@@ -20,27 +20,24 @@
 
         <TextView
             android:id="@+id/songTitle"
-            android:layout_width="284dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginEnd="200dp"
-            android:paddingLeft="16dp"
             android:text="Song Title"
+            android:textAlignment="viewStart"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toStartOf="@+id/upvoteButton"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/numLikes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:layout_marginTop="6dp"
             android:text="0 Upvotes"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/songTitle" />
     </LinearLayout>
@@ -48,27 +45,20 @@
 
     <Button
         android:id="@+id/upvoteButton"
-        android:layout_width="88dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="28dp"
+        android:alpha="0.25"
         android:paddingEnd="16dp"
         android:text="LIKE"
+        android:textAlignment="center"
         android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/linearLayout"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!--<ImageView-->
-    <!--android:id="@+id/item_info"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_alignParentEnd="true"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:layout_centerVertical="true"-->
-    <!--android:src="@android:drawable/ic_dialog_info" />-->
 
 
 </android.support.constraint.ConstraintLayout>
