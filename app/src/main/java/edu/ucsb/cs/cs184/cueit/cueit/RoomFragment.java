@@ -67,6 +67,7 @@ import java.util.Properties;
 
 import org.w3c.dom.Text;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -141,9 +142,9 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                        WifiInfo wInfo = wifiManager.getConnectionInfo();
-                        String macAddress = wInfo.getMacAddress();
+//                        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//                        WifiInfo wInfo = wifiManager.getConnectionInfo();
+                        String macAddress = getMacAddr();
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
 
@@ -305,6 +306,31 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     }
 
 
+    public static String getMacAddr() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
+                }
+
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    res1.append(String.format("%02X:",b));
+                }
+
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
+            }
+        } catch (Exception ex) {
+        }
+        return "02:00:00:00:00:00";
+    }
 
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
