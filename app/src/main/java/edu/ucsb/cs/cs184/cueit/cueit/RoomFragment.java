@@ -25,6 +25,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private Button enterSong;
     private TextView tv;
     private ListView songsList;
+    private ArrayList<SongModel> songs= new ArrayList<>();
     private String roomCode;
 
 
@@ -51,7 +52,6 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                     }
                 });
 
-        ArrayList<SongModel> songs = new ArrayList<>();
         songs.add(new SongModel("asbe", "Papparai",2));
         songs.add(new SongModel("asb1e", "Turn down",1));
         songs.add(new SongModel("afs1e", "Turn up",1));
