@@ -60,11 +60,13 @@ public class MainMenuFragment extends android.app.Fragment {
     public void startRoomFragment(String code) {
         RoomFragment newFragment = new RoomFragment();
         Bundle args = new Bundle();
+        args.putString ("roomId", code);
         newFragment.setArguments(args);
+
         android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
-        FirebaseHelper.Room room = new FirebaseHelper.Room(code);
+        //        FirebaseHelper.Room room = new FirebaseHelper.Room(code);
 
         transaction.commit();
     }

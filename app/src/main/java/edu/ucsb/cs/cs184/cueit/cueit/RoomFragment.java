@@ -1,6 +1,13 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +21,11 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -26,6 +38,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private TextView tv;
     private ListView songsList;
     private String roomCode;
+    private boolean isMaster;
 
 
     @Override
@@ -41,15 +54,44 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         enterSong =(Button) view.findViewById(R.id.enterSong);
         songsList =(ListView) view.findViewById(R.id.list);
 
-        enterSong.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View v) {
-                        // do something when the button is clicked
-                        // Yes we will handle click here but which button clicked??? We don't know
-                        System.out.println("HELLO THSI IS IT "+ searchBar.getText());
+
+        roomCode = getArguments().getString("roomId");
+        Log.d ("onChildChanged", roomCode);
+
+
+        FirebaseHelper.getInstance().getReference("Rooms").child(roomCode)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        WifiManager wifiManager = (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                        WifiInfo wInfo = wifiManager.getConnectionInfo();
+                        String macAddress = wInfo.getMacAddress();
+                        isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
+                        Log.d ("onChildAdd", isMaster+"");
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
                 });
+
+        enterSong.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // do something when the button is clicked
+                // Yes we will handle click here but which button clicked??? We don't know
+
+                DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+                db.child(roomCode).child ("songList").child (searchBar.getText().toString())
+                        .child("Timestamp").setValue (System.currentTimeMillis());
+                db.child(roomCode).child ("songList").child (searchBar.getText().toString())
+                        .child("upVotes").setValue (1);
+                //db.child(roomCode).child ("songList").child (searchBar.getText().toString())
+                //        .child("upVotes").setValue (1);
+            }
+        });
 
         ArrayList<SongModel> songs = new ArrayList<>();
         songs.add(new SongModel("asbe", "Papparai",2));
@@ -62,6 +104,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
         return view;
     }
+
+
 
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
@@ -79,6 +123,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
             Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
         }
     }
+
+
 
     /*
     @Override
