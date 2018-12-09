@@ -1,30 +1,48 @@
 package edu.ucsb.cs.cs184.cueit.cueit;
 
 
-public class SongModel {
+import java.io.Serializable;
 
-    String songID;
-    String songName;
-    int likes;
+public class SongModel implements Serializable, Comparable<SongModel>{
+
+    private String songURL;
+    private String songName;
+    private long upVotes;
+    private long Timestamp;
 
 
-    public SongModel(String id, String name, int votes ) {
-        this.songID = id;
+    public SongModel(String id, String name, long votes) {
+        this.songURL = id;
         this.songName=name;
-        this.likes=votes;
+        this.upVotes=votes;
+        this.Timestamp = 0;
     }
 
-    public String getSongID() {
-        return songID;
+    public SongModel(String id, String name, long votes, long timestamp ) {
+        this.songURL = id;
+        this.songName=name;
+        this.upVotes =votes;
+        this.Timestamp = timestamp;
     }
 
-    public String getName() {
+    public String getSongURL() {
+        return songURL;
+    }
+
+    public String getSongName() {
         return songName;
     }
 
-    public int getLikes() {
-        return likes;
+    public long getUpVotes() {
+        return upVotes;
     }
 
+    public long getTimestamp() { return Timestamp; }
 
+    public int compareTo (SongModel b) {
+        if (b.getUpVotes() == getUpVotes())
+            return (int) (getTimestamp() - b.getTimestamp());
+        else
+            return (int) (b.getUpVotes() - getUpVotes());
+    }
 }

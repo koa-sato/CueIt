@@ -15,14 +15,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+
+import android.widget.Adapter;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
@@ -32,6 +37,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 
 import com.google.android.youtube.player.YouTubePlayerView;
+
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -42,10 +48,8 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.firebase.database.ChildEventListener;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,18 +65,36 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener {
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+
+
+public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener{
 
     private static final int RECOVERY_REQUEST = 1;
     private YouTubePlayerView youTubeView;
+
     private AutoCompleteTextView dropdownList;
+
+
+    private YouTubePlayer player;
 
     private Button enterSong;
     private TextView tv;
     private ListView songsList;
-    private String roomCode;
-    private boolean isMaster;
+    private TextView currentlyPlayingTextView;
+    private TextView roomCodeTextView;
 
+    private SongListAdapter sladapter;
+    private MyPlayerStateChangeListener playerStateChangeListener;
+
+    public static String roomCode;
+    private boolean isMaster;
+    private ArrayList<SongModel> songs;
 
     private static final String PROPERTIES_FILENAME = "youtube.properties";
 
@@ -88,7 +110,6 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //setContentView(R.layout.activity_room);
         final View view = inflater.inflate(R.layout.fragment_room, container, false);
         youTubeView = view.findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
@@ -105,11 +126,18 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         dropdownList = (AutoCompleteTextView) view.findViewById(R.id.dropDown);
         Log.d("TAG123", (dropdownList==null) +"");
 
-        roomCode = getArguments().getString("roomId");
-        Log.d ("onChildChanged", roomCode);
+        currentlyPlayingTextView = (TextView) view.findViewById(R.id.nowPlayingText);
+        roomCodeTextView = (TextView) view.findViewById(R.id.roomCode);
+
+        RoomFragment.roomCode = getArguments().getString("roomId");
 
 
-        FirebaseHelper.getInstance().getReference("Rooms").child(roomCode)
+        songs = new ArrayList<>();
+        Log.d ("onChildChanged", RoomFragment.roomCode);
+
+        roomCodeTextView.setText ("Room Code: " +RoomFragment.roomCode);
+
+        FirebaseHelper.getInstance().getReference("Rooms").child(RoomFragment.roomCode)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -119,7 +147,36 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                         isMaster = dataSnapshot.child ("MasterDevice").getValue().toString().equals(macAddress);
                         Log.d ("onChildAdd", isMaster+"");
 
-                        
+                        songs.clear();
+                        for (DataSnapshot song : dataSnapshot.child ("songList").getChildren()) {
+                            Log.d ("onChildAdd", ""+song.child("Timestamp").getValue());
+                            songs.add (new SongModel((String)song.child("songURL").getValue(),
+                                    (String)song.child("songName").getValue(),
+                                    (long)song.child("upVotes").getValue(),
+                                    (long)song.child("timestamp").getValue()));
+
+                        }
+                        Collections.sort (songs);
+
+                        SongListAdapter sladapter = new SongListAdapter(
+                                getActivity().getApplicationContext(), R.layout.list_item, songs);
+                        songsList.setAdapter(sladapter);
+
+                        if (player != null && !player.isPlaying()) {
+                            playNextVideo();
+                        }
+
+                        try {
+                            String curPlaying = (String) dataSnapshot.child("CurrentlyPlaying")
+                                    .child("songName").getValue();
+                            if (curPlaying != null)
+                                currentlyPlayingTextView.setText ("Currently Playing: " + curPlaying);
+                            else
+                                currentlyPlayingTextView.setText ("Currently Playing: None");
+                        } catch (Exception e) {
+                            currentlyPlayingTextView.setText ("Currently Playing: None");
+                        }
+
                     }
 
                     @Override
@@ -208,6 +265,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
             public void onClick(View v) {
                 // do something when the button is clicked
                 // Yes we will handle click here but which button clicked??? We don't know
+
                 String str = dropdownList.getText().toString();
                 String[] splited = str.split("\n");
                 for(int i = 0; i<splited.length; i++)
@@ -222,25 +280,26 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
                 splited[0] = splited[0].replace("]","");
 
 
+
+                SongModel newSong = new SongModel (splited[1], splited[0], 1, System.currentTimeMillis());
+
                 DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
-                db.child(roomCode).child ("songList").child (splited[0])
-                        .child("Timestamp").setValue (System.currentTimeMillis());
-                db.child(roomCode).child ("songList").child (splited[1])
-                        .child("upVotes").setValue (1);
-                //db.child(roomCode).child ("songList").child (dropdownList.getText().toString())
-                //        .child("upVotes").setValue (1);
+                db.child(RoomFragment.roomCode).child ("songList").child (splited[1]).setValue (newSong).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("onClick", "Success!");
+                    }
+                });
                 dropdownList.setText("");
+
+
             }
         });
 
-        ArrayList<SongModel> songs = new ArrayList<>();
-        songs.add(new SongModel("asbe", "Papparai",2));
-        songs.add(new SongModel("asb1e", "Turn down",1));
-        songs.add(new SongModel("afs1e", "Turn up",1));
-        songs.add(new SongModel("sjdf", "Turn right",1));
-
-        SongListAdapter sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
+        sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
         songsList.setAdapter(sladapter);
+
+        playerStateChangeListener = new MyPlayerStateChangeListener();
 
         return view;
     }
@@ -249,9 +308,12 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
-        if (!wasRestored) {
-            player.cueVideo("fhWaJi1Hsfo"); // Plays https://www.youtube.com/watch?v=fhWaJi1Hsfo
-        }
+        this.player = player;
+//        player.setPlaylistEventListener(playlistEventListener);
+        player.setPlayerStateChangeListener(playerStateChangeListener);
+//        player.setPlaybackEventListener(playbackEventListener);
+
+        playNextVideo();
     }
 
     @Override
@@ -264,20 +326,6 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         }
     }
 
-    private static String getInputQuery() throws IOException {
-
-        String inputQuery = "";
-
-        System.out.print("Please enter a search term: ");
-        BufferedReader bReader = new BufferedReader(new InputStreamReader(System.in));
-        inputQuery = bReader.readLine();
-
-        if (inputQuery.length() < 1) {
-            // Use the string "YouTube Developers Live" as a default.
-            inputQuery = "YouTube Developers Live";
-        }
-        return inputQuery;
-    }
 
     /*
      * Prints out all results in the Iterator. For each result, print the
@@ -316,6 +364,63 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
             }
         }
         return titles;
+    }
+
+
+    public void refreshQueue() {
+        //TODO sort the stuff with the highest likes at the top
+        songsList.removeAllViews();
+    }
+
+    private final class MyPlayerStateChangeListener implements YouTubePlayer.PlayerStateChangeListener {
+        String playerState = "UNINITIALIZED";
+
+
+
+        @Override
+        public void onLoading() {
+        }
+
+        @Override
+        public void onLoaded(String videoId) {
+        }
+
+        @Override
+        public void onAdStarted() {
+        }
+
+        @Override
+        public void onVideoStarted() {
+        }
+
+        @Override
+        public void onVideoEnded() {
+            playNextVideo();
+        }
+
+        @Override
+        public void onError(YouTubePlayer.ErrorReason reason) {
+
+        }
+    }
+
+    public void playNextVideo () {
+        if (!songs.isEmpty()) {
+            SongModel s = songs.get(0);
+            String next_video = s.getSongURL();
+            //erase the first child from the songs queue
+            //notify the adapter of the change
+            sladapter.notifyDataSetChanged();
+            //TODO remove the next_video from the db so it doesnt show up in the listview
+
+            DatabaseReference db = FirebaseHelper.getInstance().getReference("Rooms");
+            db.child(RoomFragment.roomCode).child("songList").child(next_video).removeValue();
+
+            db.child(RoomFragment.roomCode).child("CurrentlyPlaying").setValue(s);
+
+            songs.remove(0); //this pushes down right?
+            player.loadVideo(next_video);
+        }
     }
 
 
