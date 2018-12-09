@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,8 @@ import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayer.Provider;
 import com.google.android.youtube.player.YouTubePlayerView;
 
+import java.util.ArrayList;
+
 public class RoomFragment extends android.app.Fragment implements YouTubePlayer.OnInitializedListener {
 
     private static final int RECOVERY_REQUEST = 1;
@@ -21,6 +24,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
     private EditText searchBar;
     private Button enterSong;
     private TextView tv;
+    private ListView songsList;
     private String roomCode;
 
 
@@ -35,6 +39,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 //        enterSong =(Button) view.findViewById(R.id.enterSong);
         searchBar = (EditText) view.findViewById(R.id.searchBar);
         enterSong =(Button) view.findViewById(R.id.enterSong);
+        songsList =(ListView) view.findViewById(R.id.list);
 
         enterSong.setOnClickListener(
                 new View.OnClickListener() {
@@ -45,6 +50,16 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
                     }
                 });
+
+        ArrayList<SongModel> songs = new ArrayList<>();
+        songs.add(new SongModel("asbe", "Papparai",2));
+        songs.add(new SongModel("asb1e", "Turn down",1));
+        songs.add(new SongModel("afs1e", "Turn up",1));
+        songs.add(new SongModel("sjdf", "Turn right",1));
+
+        SongListAdapter sladapter = new SongListAdapter(getActivity().getApplicationContext(), R.layout.list_item, songs);
+        songsList.setAdapter(sladapter);
+
         return view;
     }
 
