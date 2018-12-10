@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.net.NetworkInterface;
@@ -19,17 +20,21 @@ public class MainMenuFragment extends android.app.Fragment {
 
     Button createRoomButton;
     Button joinRoomButton;
+    ImageView imageView;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main_menu, container, false);
+
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         createRoomButton = view.findViewById(R.id.create_room_button);
         joinRoomButton = view.findViewById(R.id.join_room_button);
+        imageView = view.findViewById(R.id.title_screen1);
+        imageView.setImageResource(R.drawable.cue_it_large);
 
         createRoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,11 +51,11 @@ public class MainMenuFragment extends android.app.Fragment {
             }
         });
 
-        TextView tx = view.findViewById(R.id.title_screen);
+       // TextView tx = view.findViewById(R.id.title_screen);
 
-        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
+//        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
 //        Typeface font2 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/Muli-Regular.ttf");
-        tx.setTypeface(font1);
+//        tx.setTypeface(font1);
 //        TextView a = view.findViewById(R.id.join_gang_button), b = view.findViewById(R.id.create_gang_button);
 ////        a.setTypeface(font2);
     }

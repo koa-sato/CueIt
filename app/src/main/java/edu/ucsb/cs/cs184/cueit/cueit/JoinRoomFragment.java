@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -20,6 +21,7 @@ import org.w3c.dom.Text;
 public class JoinRoomFragment extends android.app.Fragment {
     EditText code;
     Button joinButton;
+    ImageView imageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,6 +34,8 @@ public class JoinRoomFragment extends android.app.Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         code = view.findViewById(R.id.join_edittext);
         joinButton = view.findViewById(R.id.join_button);
+        imageView = view.findViewById(R.id.title_screen2);
+        imageView.setImageResource(R.drawable.cue_it_large);
 
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,11 +53,11 @@ public class JoinRoomFragment extends android.app.Fragment {
             }
         });
 
-        TextView tx = view.findViewById(R.id.title_screen2);
+//        TextView tx = view.findViewById(R.id.title_screen2);
 
-        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
+//        Typeface font1 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/title_font.TTF");
 //        Typeface font2 = Typeface.createFromAsset(getActivity().getAssets(),  "fonts/Muli-Regular.ttf");
-        tx.setTypeface(font1);
+       // tx.setTypeface(font1);
     }
 
     public void startRoomFragment(String code) {

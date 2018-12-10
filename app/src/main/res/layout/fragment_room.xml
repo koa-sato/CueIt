@@ -15,6 +15,17 @@
     <!--android:text="CURrent users"-->
     <!--app:layout_constraintLeft_toLeftOf=""/>-->
 
+    <ImageView
+        android:id="@+id/title_screen3"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:src="@drawable/cue_it_small"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+         />
+
     <TextView
         android:id="@+id/nowPlayingText"
         android:layout_width="0dp"
@@ -22,7 +33,7 @@
         android:layout_weight=".6"
         android:text="Now Playing:"
 
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_screen3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintRight_toLeftOf="@id/roomCode"
         android:textAlignment="gravity"
@@ -35,7 +46,6 @@
         app:layout_constraintWidth_percent="0.6"
 
         android:textColor="@android:color/white"
-        android:textStyle="bold"
        />
 
 
@@ -48,7 +58,7 @@
         android:paddingRight="5dp"
         android:paddingBottom="5dp"
         android:paddingTop="5dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_screen3"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/nowPlayingText"
         android:textAppearance="?android:attr/textAppearanceMedium"

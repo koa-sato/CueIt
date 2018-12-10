@@ -24,6 +24,7 @@ import android.widget.Adapter;
 
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,6 +85,7 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
 
 
     private YouTubePlayer player;
+    private ImageView imageView;
 
     private Button enterSong;
     private TextView tv;
@@ -118,6 +120,8 @@ public class RoomFragment extends android.app.Fragment implements YouTubePlayer.
         final View view = inflater.inflate(R.layout.fragment_room, container, false);
         youTubeView = view.findViewById(R.id.youtube_view);
         youTubeView.initialize(Config.YOUTUBE_API_KEY, this);
+        imageView = view.findViewById(R.id.title_screen3);
+        imageView.setImageResource(R.drawable.cue_it_small);
 
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
