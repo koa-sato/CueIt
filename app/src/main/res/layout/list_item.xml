@@ -33,8 +33,6 @@
     </LinearLayout>
 
 
-
-
     <Button
         android:id="@+id/upvoteButton"
         android:layout_width="wrap_content"
